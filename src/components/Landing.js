@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { getCoin } from "../services/api";
 //components
 import Loader from "./Loader";
+import Coin from "./Coin";
 
 const Landing = () => {
   const [coins, setCoin] = useState([]);
+  const [search, setSearch] = useState("");
+
   useEffect(() => {
     const fetchApi = async () => {
       const data = await getCoin();
@@ -13,14 +16,34 @@ const Landing = () => {
     };
     fetchApi();
   }, []);
+  const searchHandler = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const seachedCoins = coins.filter((coin) =>
+    coin.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <>
-      <input type="text" placeholder="Search" />
+      <input
+        type="text"
+        placeholder="Search"
+        value={search}
+        onChange={searchHandler}
+      />
       {coins.length ? (
         <div>
-          {coins.map((coin) => (
-            <p key={coin.id}>{coin.name}</p>
+          {seachedCoins.map((coin) => (
+            <Coin
+              key={coin.id}
+              name={coin.name}
+              image={coin.image}
+              symbol={coin.symbol}
+              price={coin.current_price}
+              marketCap={coin.market_cap}
+              priceChange={coin.price_change_percentage_24h}
+            />
           ))}
         </div>
       ) : (
